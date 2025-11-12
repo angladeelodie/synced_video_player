@@ -1,0 +1,46 @@
+ body,
+      html {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        width: 100%;
+        background: #111;
+        color: #fff;
+        font-family: sans-serif;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .swiper {
+        width: 90%;
+        height: 80%;
+      }
+
+      .swiper-slide {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 12px;
+        overflow: hidden;
+        background: #222;
+      }
+
+      .slide-content video {
+        width: 100%;
+        height: auto;
+        aspect-ratio: 16/9;
+        object-fit: cover;
+        border-radius: 8px;
+      }
+
+      .project-name {
+        position: absolute;
+        bottom: 10px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: rgba(0, 0, 0, 0.5);
+        padding: 5px 12px;
+        border-radius: 6px;
+        font-weight: bold;
+      }

@@ -10,55 +10,10 @@
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.css"
     />
-
-    <style>
-      body,
-      html {
-        margin: 0;
-        padding: 0;
-        height: 100%;
-        width: 100%;
-        background: #111;
-        color: #fff;
-        font-family: sans-serif;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-      }
-
-      .swiper {
-        width: 90%;
-        height: 80%;
-      }
-
-      .swiper-slide {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border-radius: 12px;
-        overflow: hidden;
-        background: #222;
-      }
-
-      .slide-content video {
-        width: 100%;
-        height: auto;
-        aspect-ratio: 16/9;
-        object-fit: cover;
-        border-radius: 8px;
-      }
-
-      .project-name {
-        position: absolute;
-        bottom: 10px;
-        left: 50%;
-        transform: translateX(-50%);
-        background: rgba(0, 0, 0, 0.5);
-        padding: 5px 12px;
-        border-radius: 6px;
-        font-weight: bold;
-      }
-    </style>
+      <link
+      rel="stylesheet"
+      href="./css/computer.css"
+    />
   </head>
   <body>
     <div class="swiper">
@@ -72,100 +27,7 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.js"></script>
-    <script>
-      const swiperWrapper = document.querySelector(".swiper-wrapper");
-
-      async function loadAlbums() {
-        try {
-          const response = await fetch("/api/media");
-          const data = await response.json();
-          console.log(data);
-          const catalog = data || {};
-
-          const albumData = [];
-
-          // Loop through all students/projects
-          // Loop through all students/projects
-          Object.keys(catalog).forEach((studentName) => {
-            const student = catalog[studentName];
-
-            student.songs.forEach((song, index) => {
-              const squareVideo = song.square;
-              if (!squareVideo) return;
-
-              const slide = document.createElement("div");
-              slide.classList.add("swiper-slide");
-              slide.innerHTML = `
-      <div class="slide-content">
-        <video muted loop playsinline autoplay>
-          <source src="${squareVideo}" type="video/mp4" />
-        </video>
-        <div class="project-name">${student.student_id} - Song ${song.id}</div>
-      </div>
-    `;
-              swiperWrapper.appendChild(slide);
-            });
-          });
-
-          // Initialize Swiper
-          const swiper = new Swiper(".swiper", {
-            slidesPerView: 3,
-            centeredSlides: true,
-            loop: true,
-            spaceBetween: 30,
-            effect: "coverflow",
-            coverflowEffect: {
-              rotate: 30,
-              stretch: 0,
-              depth: 100,
-              modifier: 1,
-              slideShadows: true,
-            },
-            navigation: {
-              nextEl: ".swiper-button-next",
-              prevEl: ".swiper-button-prev",
-            },
-            on: {
-              init() {
-                playActiveSlideVideo(this);
-              },
-              slideChange() {
-                playActiveSlideVideo(this);
-              },
-            },
-          });
-
-          function playActiveSlideVideo(swiper) {
-            swiper.slides.forEach((slide) => {
-              const video = slide.querySelector("video");
-              if (video) {
-                video.pause();
-                video.currentTime = 0;
-              }
-            });
-            const activeVideo =
-              swiper.slides[swiper.activeIndex].querySelector("video");
-            if (activeVideo)
-              activeVideo.play().catch((err) => console.warn(err));
-          }
-
-          // Optional WebSocket
-          const ws = new WebSocket("ws://localhost:3000");
-          ws.onopen = () => console.log("Connected to server");
-          ws.onmessage = (event) => {
-            const data = JSON.parse(event.data);
-            if (data.type === "play") {
-              swiper.slideToLoop(data.slideIndex || 0);
-            }
-          };
-        } catch (err) {
-          console.error("Failed to load albums:", err);
-          swiperWrapper.innerHTML =
-            '<div class="swiper-slide">Erreur de chargement</div>';
-        }
-      }
-
-      window.addEventListener("DOMContentLoaded", loadAlbums);
-    </script>
+ 
+    <script type="module" src="./js/computer.js"></script>
   </body>
 </html>

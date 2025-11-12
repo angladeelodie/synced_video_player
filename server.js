@@ -1,29 +1,36 @@
 const express = require("express");
 const { WebSocketServer } = require("ws");
-
 const fs = require("fs");
 const path = require("path");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Serve static files (HTML, JS, CSS, videos, etc.)
+// ---------------------------------------------------
+// 🌐 Serve static files
+// ---------------------------------------------------
 app.use(express.static(path.join(__dirname, "public")));
 app.use("/videos", express.static(path.join(__dirname, "videos")));
 
 // ---------------------------------------------------
-// 🧠 Function to read folder structure dynamically
+// 🧠 Read videos folder and return structured data
 // ---------------------------------------------------
 function getMediaStructure() {
   const basePath = path.join(__dirname, "videos");
+
+  // List all students (folders)
   const students = fs.readdirSync(basePath).filter((f) =>
     fs.lstatSync(path.join(basePath, f)).isDirectory()
   );
 
+  // Map each student folder to a structured object
   return students.map((student) => {
     const studentPath = path.join(basePath, student);
+
+    // horizontal video (optional)
     const horizontal = path.join("videos", student, "horizontal.mp4");
 
+    // list song folders (1,2,3...)
     const songs = fs
       .readdirSync(studentPath)
       .filter(
@@ -49,20 +56,21 @@ function getMediaStructure() {
   });
 }
 
-// API route to fetch media structure
+// ---------------------------------------------------
+// 📡 API endpoint for media structure
+// ---------------------------------------------------
 app.get("/api/media", (req, res) => {
   res.json(getMediaStructure());
 });
 
 // ---------------------------------------------------
-// 🔌 WebSocket server
+// 🔌 WebSocket server for controlling clients
 // ---------------------------------------------------
 const server = app.listen(PORT, () => {
   console.log(`✅ Server running on http://localhost:${PORT}`);
 });
 
 const wss = new WebSocketServer({ server });
-
 let clients = [];
 
 wss.on("connection", (ws) => {
@@ -71,7 +79,8 @@ wss.on("connection", (ws) => {
 
   ws.on("message", (message) => {
     console.log("📩 Received:", message.toString());
-    // Broadcast message to all *other* clients
+
+    // Broadcast to all other clients
     clients.forEach((client) => {
       if (client !== ws && client.readyState === 1) {
         client.send(message.toString());
