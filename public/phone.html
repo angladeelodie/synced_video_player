@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Phone Controller</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.css">
+  <style>
+    body { margin: 0; font-family: sans-serif; background: #111; color: #fff; }
+    .swiper-slide { display: flex; flex-direction: column; align-items: center; justify-content: center; }
+    video { width: 250px; height: 400px; object-fit: cover; border-radius: 8px; }
+    .song-name { margin-top: 10px; text-align: center; font-weight: bold; }
+    .controls { display: flex; justify-content: center; margin-top: 20px; gap: 10px; }
+    button { padding: 10px 20px; font-size: 16px; }
+  </style>
+  
+</head>
+<body>
+
+<div class="swiper" id="songSwiper">
+  <div class="swiper-wrapper" id="songsGrid">
+    <div class="swiper-slide">Loading songs...</div>
+  </div>
+  <div class="swiper-button-next"></div>
+  <div class="swiper-button-prev"></div>
+</div>
+
+<div class="controls">
+  <button id="play">▶ Play</button>
+  <button id="pause">⏸ Pause</button>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.js"></script>
+<script>
+  // Initialize Swiper
+  const swiper = new Swiper("#songSwiper", {
+    slidesPerView: 1,
+    spaceBetween: 20,
+    navigation: { nextEl: ".swiper-button-next", prevEl: ".swiper-button-prev" },
+  });
+
+  // WebSocket
+  const ws = new WebSocket(`ws://${location.host}`);
+  ws.onopen = () => console.log("✅ WebSocket connected");
+  ws.onmessage = (e) => console.log("📩 Message:", e.data);
+
+  // Fetch media from server
+  async function loadSongs() {
+    const res = await fetch("/api/media");
+    const data = await res.json();
+
+    const songsGrid = document.getElementById("songsGrid");
+    songsGrid.innerHTML = "";
+
+    data.forEach(student => {
+      student.songs.forEach(song => {
+        const slide = document.createElement("div");
+        slide.className = "swiper-slide";
+        slide.innerHTML = `
+          <video muted loop autoplay>
+            <source src="${song.vertical}" type="video/mp4">
+          </video>
+          <div class="song-name">${student.student_id} - Song ${song.id}</div>
+        `;
+        slide.onclick = () => selectSong(student.student_id, song.id);
+        songsGrid.appendChild(slide);
+      });
+    });
+
+    swiper.update();
+  }
+
+  // Track selected song
+  let currentSelection = null;
+  function selectSong(student_id, song_id) {
+    currentSelection = { student_id, song_id };
+    console.log("Selected:", currentSelection);
+    if (ws.readyState === WebSocket.OPEN) {
+      ws.send(JSON.stringify({ type: "selectSong", ...currentSelection }));
+    }
+  }
+
+  // Play / Pause buttons
+  document.getElementById("play").onclick = () => {
+    if (currentSelection && ws.readyState === WebSocket.OPEN) {
+      ws.send(JSON.stringify({ type: "play", ...currentSelection }));
+    }
+  };
+  document.getElementById("pause").onclick = () => {
+    if (currentSelection && ws.readyState === WebSocket.OPEN) {
+      ws.send(JSON.stringify({ type: "pause", ...currentSelection }));
+    }
+  };
+
+  window.onload = loadSongs;
+</script>
+
+</body>
+</html>
