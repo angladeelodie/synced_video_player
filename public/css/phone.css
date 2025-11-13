@@ -22,7 +22,7 @@
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  padding: 16px;
+  padding: 1.5rem;
   background: linear-gradient(to top, rgba(0, 0, 0, 0.9) 10%, transparent 50%);
 }
 
@@ -55,23 +55,24 @@
   height: 15vw;
   border-radius: 6px;
   object-fit: cover;
-  margin-bottom: 10px;
 }
 
 .song-title {
   font-weight: 600;
-  font-size: 1.2rem;
+  font-size: 1.8rem;
+  white-space: nowrap;
 }
 
 .song-artist {
   opacity: 0.7;
-  font-size: 0.9rem;
+  font-size: 1rem;
+  font-weight: 400;
   text-transform: capitalize;
 }
 
 /* Progress bar */
 .progress-container {
-  margin: 20px 0 10px 0;
+  margin: 10px 0 10px 0;
 }
 
 .progress-bar {
@@ -109,16 +110,23 @@
   background: none;
   border: none;
   color: white;
-  font-size: 1.8rem;
+  height: 70%;
   cursor: pointer;
+  position: relative;
+}
+
+.control-btn img {
+  /* width: 100%; */
+  height: 100%;
+  object-fit: contain;
 }
 
 #playPause {
   background: white;
   color: black;
   border-radius: 50%;
-  width: 60px;
-  height: 60px;
+  width: 15vw;
+  height: 15vw;
   font-size: 2rem;
   display: flex;
   align-items: center;
@@ -129,9 +137,23 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-size: 0.9rem;
+  font-size: 0.75rem;
   opacity: 0.8;
 }
+
+.device-info {
+  display: flex;
+  align-items: center;
+  gap: 0px;
+}
+
+.device-info img {
+  margin-right: 6px;
+}
+#student-name {
+  text-transform: capitalize;
+}
+
 
 .footer-icons {
   display: flex;
@@ -141,3 +163,4 @@
 .footer-icons span {
   cursor: pointer;
 }
+

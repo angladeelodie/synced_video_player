@@ -51,12 +51,14 @@ async function loadAlbums() {
         slide.classList.add("swiper-slide");
         slide.innerHTML = `
           <div class="slide-content">
-            <video muted loop playsinline autoplay>
+            <video loop playsinline preload="auto">
               <source src="${song.square}" type="video/mp4" />
             </video>
             <div class="project-info">
-              <div class="song-title">${song.id}</div>
-              <div class="song-artist">${student.student_id}</div>
+              <div class="song-title-container">
+                <div class="song-title">${song.title}</div>
+              </div>
+              <div class="song-artist">${song.artist}</div>
             </div>
             
           </div>
@@ -98,6 +100,20 @@ async function loadAlbums() {
       },
     });
 
+    document.querySelectorAll(".song-title").forEach((title) => {
+      const container = title.parentElement;
+
+      if (title.scrollWidth > container.clientWidth) {
+        // Duplicate the text for seamless loop
+        title.innerHTML = title.innerHTML + " — " + title.innerHTML;
+        title.classList.add("scrolling");
+        title.parentElement.classList.add("scrolling");
+        // Optional: adjust animation duration based on text width
+        const duration = (title.scrollWidth / 200).toFixed(1); // e.g., wider text = longer animation
+        title.style.animationDuration = `${duration}s`;
+      }
+    });
+
     console.log("✅ Swiper initialized with", albumData.length, "slides");
   } catch (err) {
     console.error("❌ Failed to load albums:", err);
@@ -116,7 +132,20 @@ function playActiveSlideVideo(swiper) {
   });
 
   const activeVideo = swiper.slides[swiper.activeIndex].querySelector("video");
-  if (activeVideo) activeVideo.play().catch((err) => console.warn(err));
+  if (activeVideo) {
+    activeVideo.muted = false; // ✅ unmute so we hear the embedded audio
+    activeVideo.play().catch((err) => console.warn(err));
+  }
 }
+
+document.body.addEventListener(
+  "click",
+  () => {
+    const activeVideo =
+      swiper?.slides[swiper.activeIndex]?.querySelector("video");
+    if (activeVideo) activeVideo.play().catch(() => {});
+  },
+  { once: true }
+);
 
 window.addEventListener("DOMContentLoaded", loadAlbums);

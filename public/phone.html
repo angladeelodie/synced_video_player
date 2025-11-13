@@ -3,15 +3,13 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
     <title>Phone</title>
-    <link
+      <link
       rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.css"
+      href="./css/swiper-bundle.css"
     />
-       <link
-      rel="stylesheet"
-      href="./css/common.css"
-    />
+    <link rel="stylesheet" href="./css/common.css" />
     <link rel="stylesheet" href="./css/phone.css" />
   </head>
   <body>
@@ -26,9 +24,13 @@
     <div class="overlay">
       <!-- Header -->
       <header class="top-bar">
-        <div class="icon-left">⌄</div>
+        <div class="icon-left">
+          <img src="./assets/icons/Down.svg" alt="">
+        </div>
         <div class="title">Liked songs</div>
-        <div class="icon-right">⋯</div>
+        <div class="icon-right">
+          <img src="./assets/icons/3dots.svg" alt="">
+        </div>
       </header>
 
       <!-- Player Info -->
@@ -55,25 +57,36 @@
 
       <!-- Player Controls -->
       <div class="player-controls">
-        <button class="control-btn button-prev">⏮</button>
-        <button id="playPause" class="control-btn play">▶</button>
+        <button class="control-btn button-prev">
+          <img src="./assets/icons/Back.svg" alt="" />
+        </button>
+        <button id="playPause" class="control-btn play">
+          <img src="./assets/icons/Play.svg" alt="" />
+        </button>
 
-        <button class="control-btn button-next">⏭</button>
+        <button class="control-btn button-next">
+          <img src="./assets/icons/Next.svg" alt="" />
+        </button>
       </div>
 
       <!-- Footer -->
       <footer class="bottom-bar">
         <div class="device-info">
-          <span>🖥 Elodie’s MacBook Pro</span>
+            <img src="./assets/icons/Listening-on.svg" alt="" />
+            <span id="student-name"></span>
+            <span>'s MacBook Pro</span>
         </div>
         <div class="footer-icons">
-          <span>⇅</span>
-          <span>≡</span>
+          <span>
+            <img src="./assets/icons/Full_Screen.svg" alt="">
+          </span>
+          <span>
+          <img src="./assets/icons/Share.svg" alt=""></span>
         </div>
       </footer>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.js"></script>
+    <script src="./js/swiper-bundle.min.js"></script>
     <script type="module" src="./js/phone.js"></script>
   </body>
 </html>

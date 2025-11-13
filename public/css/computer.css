@@ -49,14 +49,59 @@ html {
 }
 
 .project-info {
- width: 100%;
- display: flex;
- flex-direction: column;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.song-title-container {
+  position: relative;
+  width: 100%; /* adjust to your slide width */
+  overflow: hidden;
+  white-space: nowrap;
+  height: 2.5rem;
+}
+
+.song-title-container::before,
+.song-title-container::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  width: 30px;
+  height: 100%;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.song-title-container.scrolling::before {
+  left: 0;
+  background: linear-gradient(to right, #222, transparent);
+}
+
+.song-title-container.scrolling::after {
+  right: 0;
+  background: linear-gradient(to left, #222, transparent);
 }
 
 .song-title {
   font-weight: 600;
-  font-size: 1.2rem;
+  font-size: 2rem;
+  display: inline-block;
+}
+
+.song-title.scrolling {
+  padding-left: 30px; /* match fade width */
+  padding-right: 30px; /* match fade width */
+  animation: scroll-title 5s linear infinite;
+}
+
+@keyframes scroll-title {
+  0% {
+    transform: translateX(0%);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
 }
 
 .song-artist {

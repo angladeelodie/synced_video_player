@@ -19,13 +19,18 @@ function getMediaStructure() {
   const basePath = path.join(__dirname, "videos");
 
   // List all students (folders)
-  const students = fs.readdirSync(basePath).filter((f) =>
-    fs.lstatSync(path.join(basePath, f)).isDirectory()
-  );
+  const students = fs
+    .readdirSync(basePath)
+    .filter((f) => fs.lstatSync(path.join(basePath, f)).isDirectory());
 
   // Map each student folder to a structured object
   return students.map((student) => {
     const studentPath = path.join(basePath, student);
+    const metaPath = path.join(studentPath, "metadata.json");
+    let metadata = {};
+    if (fs.existsSync(metaPath)) {
+      metadata = JSON.parse(fs.readFileSync(metaPath, "utf-8"));
+    }
 
     // horizontal video (optional)
     const horizontal = path.join("videos", student, "horizontal.mp4");
@@ -45,7 +50,11 @@ function getMediaStructure() {
           audio: `${songPath}/audio.mp3`,
           vertical: `${songPath}/vertical.mp4`,
           square: `${songPath}/square.mp4`,
-          cover: `${songPath}/cover.jpg`
+          cover: `${songPath}/cover.jpg`,
+          title: metadata[songFolder]?.title || songFolder,
+          album: metadata[songFolder]?.album || "Unknown Album",
+          artist: metadata[songFolder]?.artist || "Unknown Artist",
+
         };
       });
 

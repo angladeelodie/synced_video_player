@@ -17,12 +17,13 @@ const swiper = new Swiper("#songSwiper", {
   },
 });
 
-function changeUiElements(studentId, songId) {
+function changeUiElements(studentId, songId, songTitle, songArtist, songAlbum) {
   document.getElementById(
     "coverImage"
   ).src = `videos/${studentId}/${songId}/cover.jpg`;
-  document.getElementById("song-title").innerText = `Song ${songId}`;
-  document.getElementById("song-artist").innerText = `By ${studentId}`;
+  document.getElementById("song-title").innerText = `${songTitle}`;
+  document.getElementById("song-artist").innerText = `${songArtist}`;
+  document.getElementById("student-name").innerText = `${studentId}`;
 }
 
 // send selected slide info when Swiper changes
@@ -30,13 +31,19 @@ swiper.on("slideChange", () => {
   console.log("Slide changed to index:", swiper.activeIndex);
   const slide = swiper.slides[swiper.activeIndex];
   const studentId = slide.dataset.student;
-  const songId = slide.dataset.song;
-  changeUiElements(studentId, songId);
+  const songId = slide.dataset.songId;
+  const songTitle = slide.dataset.song;
+  const songArtist = slide.dataset.artist;
+  const songAlbum = slide.dataset.album;
+  
+  
+  changeUiElements(studentId, songId, songTitle, songArtist, songAlbum);
   ws.send(
     JSON.stringify({
       type: "selectSlide",
       student_id: studentId,
       song_id: songId,
+      
     })
   );
 });
@@ -55,20 +62,28 @@ async function loadSongs() {
       const slide = document.createElement("div");
       slide.className = "swiper-slide";
       slide.dataset.student = student.student_id;
-      slide.dataset.song = song.id;
+      slide.dataset.songId = song.id;
+      slide.dataset.song = song.title;
+      slide.dataset.album = song.album;
+      slide.dataset.artist = song.artist;
 
       slide.innerHTML = `
           <video muted loop autoplay playsinline>
             <source src="${song.vertical}" type="video/mp4">
           </video>
-          <div class="song-name">${student.student_id} - Song ${song.id}</div>
         `;
       //   slide.onclick = () => selectSong(student.student_id, song.id);
       songsGrid.appendChild(slide);
     });
   });
-  changeUiElements(data[0].student_id, data[0].songs[0].id);
   swiper.update();
+  changeUiElements(
+    data[0].student_id,
+    data[0].songs[0].id,
+    data[0].songs[0].title,
+    data[0].songs[0].artist,
+    data[0].songs[0].album
+  );
 }
 
 // Play / Pause buttons
@@ -81,11 +96,11 @@ playPauseBtn.onclick = () => {
   if (isPlaying) {
     // Send pause
     // ws.send(JSON.stringify({ type: "pause", ...currentSelection }));
-    playPauseBtn.textContent = "▶"; // show play icon
+    playPauseBtn.innerHTML = '<img src="./assets/icons/Play.svg" alt="">'; // show play icon
   } else {
     // Send play
     // ws.send(JSON.stringify({ type: "play", ...currentSelection }));
-    playPauseBtn.textContent = "⏸"; // show pause icon
+    playPauseBtn.innerHTML = '<img src="./assets/icons/Pause.svg" alt="">'; // show pause icon
   }
 
   isPlaying = !isPlaying;
