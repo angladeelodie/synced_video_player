@@ -1,5 +1,6 @@
 // phone.js
-const ws = new WebSocket("ws://localhost:3000");
+import { WS_URL } from "./config.js";
+const ws = new WebSocket(WS_URL);
 
 ws.onopen = () => {
   console.log("📡 Phone connected to server");
@@ -57,7 +58,7 @@ async function loadSongs() {
       slide.dataset.song = song.id;
 
       slide.innerHTML = `
-          <video muted loop autoplay>
+          <video muted loop autoplay playsinline>
             <source src="${song.vertical}" type="video/mp4">
           </video>
           <div class="song-name">${student.student_id} - Song ${song.id}</div>

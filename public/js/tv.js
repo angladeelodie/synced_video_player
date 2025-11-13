@@ -1,7 +1,8 @@
 let swiper;
 let albumData = [];
 
-const ws = new WebSocket("ws://localhost:3000");
+import { WS_URL } from "./config.js";
+const ws = new WebSocket(WS_URL);
 
 ws.onopen = () => {
   console.log("📺 TV connected to WebSocket server");
