@@ -1,6 +1,6 @@
 // computer.js
 let swiper;
-let albumData = []; 
+let albumData = [];
 
 const ws = new WebSocket("ws://localhost:3000");
 
@@ -26,7 +26,6 @@ ws.onmessage = (event) => {
     }
   }
 };
-
 
 const swiperWrapper = document.querySelector(".swiper-wrapper");
 
@@ -54,7 +53,11 @@ async function loadAlbums() {
             <video muted loop playsinline autoplay>
               <source src="${song.square}" type="video/mp4" />
             </video>
-            <div class="project-name">${student.student_id} - Song ${song.id}</div>
+            <div class="project-info">
+              <div class="song-title">${song.id}</div>
+              <div class="song-artist">${student.student_id}</div>
+            </div>
+            
           </div>
         `;
         swiperWrapper.appendChild(slide);
@@ -63,10 +66,11 @@ async function loadAlbums() {
 
     // Initialize Swiper
     swiper = new Swiper(".swiper", {
-      slidesPerView: 3,
+      slidesPerView: "auto",
       centeredSlides: true,
+      // loopAdditionalSlides: 2,
       loop: true,
-      spaceBetween: 30,
+      spaceBetween: 0,
       effect: "coverflow",
       coverflowEffect: {
         rotate: 30,
@@ -75,6 +79,10 @@ async function loadAlbums() {
         modifier: 1,
         slideShadows: true,
       },
+      // pagination: {
+      //   el: ".swiper-pagination",
+      //   type: "progressbar",
+      // },
       navigation: {
         nextEl: ".swiper-button-next",
         prevEl: ".swiper-button-prev",
@@ -106,8 +114,7 @@ function playActiveSlideVideo(swiper) {
     }
   });
 
-  const activeVideo =
-    swiper.slides[swiper.activeIndex].querySelector("video");
+  const activeVideo = swiper.slides[swiper.activeIndex].querySelector("video");
   if (activeVideo) activeVideo.play().catch((err) => console.warn(err));
 }
 

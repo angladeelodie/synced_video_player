@@ -60,6 +60,11 @@ async function loadAlbums() {
     swiper = new Swiper(".swiper", {
       slidesPerView: 1,
       loop: true,
+      speed: 0,
+      navigation: {
+        nextEl: ".button-next",
+        prevEl: ".button-prev",
+      },
       on: {
         init() {
           playActiveSlideVideo(this);
