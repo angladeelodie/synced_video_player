@@ -11,17 +11,62 @@
     <link rel="stylesheet" href="./css/phone.css" />
   </head>
   <body>
+    <!-- Background Swiper -->
     <div class="swiper" id="songSwiper">
       <div class="swiper-wrapper" id="songsGrid">
         <div class="swiper-slide">Loading songs...</div>
       </div>
-      <div class="swiper-button-next"></div>
-      <div class="swiper-button-prev"></div>
     </div>
 
-    <div class="controls">
-      <button id="play">▶ Play</button>
-      <button id="pause">⏸ Pause</button>
+    <!-- Overlay UI -->
+    <div class="overlay">
+      <!-- Header -->
+      <header class="top-bar">
+        <div class="icon-left">⌄</div>
+        <div class="title">Liked songs</div>
+        <div class="icon-right">⋯</div>
+      </header>
+
+      <!-- Player Info -->
+      <div class="player-info">
+        <div class="song-thumbnail">
+          <img id="coverImage" src="cover.jpg" alt="cover" />
+        </div>
+        <div class="song-details">
+          <div id="song-title" class="song-title">The One That Got Away</div>
+          <div id="song-artist" class="song-artist">Katy Perry</div>
+        </div>
+      </div>
+
+      <!-- Progress Bar -->
+      <div class="progress-container">
+        <div class="progress-bar">
+          <div class="progress"></div>
+        </div>
+        <div class="time-info">
+          <span>2:40</span>
+          <span>-1:38</span>
+        </div>
+      </div>
+
+      <!-- Player Controls -->
+      <div class="player-controls">
+        <button class="control-btn button-prev">⏮</button>
+        <button id="playPause" class="control-btn play">▶</button>
+
+        <button class="control-btn button-next">⏭</button>
+      </div>
+
+      <!-- Footer -->
+      <footer class="bottom-bar">
+        <div class="device-info">
+          <span>🖥 Elodie’s MacBook Pro</span>
+        </div>
+        <div class="footer-icons">
+          <span>⇅</span>
+          <span>≡</span>
+        </div>
+      </footer>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.js"></script>

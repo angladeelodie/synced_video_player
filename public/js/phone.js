@@ -8,13 +8,21 @@ ws.onopen = () => {
 // Initialize Swiper
 const swiper = new Swiper("#songSwiper", {
   slidesPerView: 1,
-  spaceBetween: 20,
+  spaceBetween: 0,
   loop: true,
   navigation: {
-    nextEl: ".swiper-button-next",
-    prevEl: ".swiper-button-prev",
+    nextEl: ".button-next",
+    prevEl: ".button-prev",
   },
 });
+
+function changeUiElements(studentId, songId) {
+  document.getElementById(
+    "coverImage"
+  ).src = `videos/${studentId}/${songId}/cover.jpg`;
+  document.getElementById("song-title").innerText = `Song ${songId}`;
+  document.getElementById("song-artist").innerText = `By ${studentId}`;
+}
 
 // send selected slide info when Swiper changes
 swiper.on("slideChange", () => {
@@ -22,6 +30,7 @@ swiper.on("slideChange", () => {
   const slide = swiper.slides[swiper.activeIndex];
   const studentId = slide.dataset.student;
   const songId = slide.dataset.song;
+  changeUiElements(studentId, songId);
   ws.send(
     JSON.stringify({
       type: "selectSlide",
@@ -35,6 +44,7 @@ swiper.on("slideChange", () => {
 async function loadSongs() {
   const res = await fetch("/api/media");
   const data = await res.json();
+  console.log("📥 Media data:", data);
 
   const songsGrid = document.getElementById("songsGrid");
   songsGrid.innerHTML = "";
@@ -44,8 +54,8 @@ async function loadSongs() {
       const slide = document.createElement("div");
       slide.className = "swiper-slide";
       slide.dataset.student = student.student_id;
-        slide.dataset.song = song.id;
-      
+      slide.dataset.song = song.id;
+
       slide.innerHTML = `
           <video muted loop autoplay>
             <source src="${song.vertical}" type="video/mp4">
@@ -56,22 +66,28 @@ async function loadSongs() {
       songsGrid.appendChild(slide);
     });
   });
-
+  changeUiElements(data[0].student_id, data[0].songs[0].id);
   swiper.update();
 }
 
-
-
 // Play / Pause buttons
-document.getElementById("play").onclick = () => {
-  if (currentSelection && ws.readyState === WebSocket.OPEN) {
-    ws.send(JSON.stringify({ type: "play", ...currentSelection }));
+const playPauseBtn = document.getElementById("playPause");
+let isPlaying = false; // track state manually
+
+playPauseBtn.onclick = () => {
+  if (ws.readyState !== WebSocket.OPEN) return;
+
+  if (isPlaying) {
+    // Send pause
+    // ws.send(JSON.stringify({ type: "pause", ...currentSelection }));
+    playPauseBtn.textContent = "▶"; // show play icon
+  } else {
+    // Send play
+    // ws.send(JSON.stringify({ type: "play", ...currentSelection }));
+    playPauseBtn.textContent = "⏸"; // show pause icon
   }
-};
-document.getElementById("pause").onclick = () => {
-  if (currentSelection && ws.readyState === WebSocket.OPEN) {
-    ws.send(JSON.stringify({ type: "pause", ...currentSelection }));
-  }
+
+  isPlaying = !isPlaying;
 };
 
 window.onload = loadSongs;

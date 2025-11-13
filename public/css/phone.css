@@ -1,33 +1,152 @@
-  body {
-        margin: 0;
-        font-family: sans-serif;
-        background: #111;
-        color: #fff;
-      }
-      .swiper-slide {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-      }
-      video {
-        width: 250px;
-        height: 400px;
-        object-fit: cover;
-        border-radius: 8px;
-      }
-      .song-name {
-        margin-top: 10px;
-        text-align: center;
-        font-weight: bold;
-      }
-      .controls {
-        display: flex;
-        justify-content: center;
-        margin-top: 20px;
-        gap: 10px;
-      }
-      button {
-        padding: 10px 20px;
-        font-size: 16px;
-      }
+html,
+body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", sans-serif;
+  background: black;
+  color: white;
+  overflow: hidden;
+}
+
+/* Fullscreen swiper background */
+.swiper {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+}
+
+.swiper-slide video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Overlay content */
+.overlay {
+  pointer-events: none;
+  position: relative;
+  z-index: 10;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 16px;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.9) 10%, transparent 50%);
+}
+
+/* Top bar */
+.top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: 600;
+  opacity: 0.9;
+  font-size: 1rem;
+}
+
+.icon-left,
+.icon-right {
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+
+/* Player info */
+.player-info {
+  margin-top: auto;
+  display: flex;
+  flex-direction: row;
+  gap: 1rem;
+}
+
+.song-thumbnail img {
+  width: 15vw;
+  height: 15vw;
+  border-radius: 6px;
+  object-fit: cover;
+  margin-bottom: 10px;
+}
+
+.song-title {
+  font-weight: 600;
+  font-size: 1.2rem;
+}
+
+.song-artist {
+  opacity: 0.7;
+  font-size: 0.9rem;
+  text-transform: capitalize;
+}
+
+/* Progress bar */
+.progress-container {
+  margin: 20px 0 10px 0;
+}
+
+.progress-bar {
+  height: 4px;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.progress {
+  width: 40%;
+  height: 100%;
+  background: white;
+}
+
+.time-info {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.8rem;
+  opacity: 0.7;
+  margin-top: 4px;
+}
+
+/* Controls */
+.player-controls {
+  pointer-events: all;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 40px;
+  margin: 10px 0;
+}
+
+.control-btn {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 1.8rem;
+  cursor: pointer;
+}
+
+#playPause {
+  background: white;
+  color: black;
+  border-radius: 50%;
+  width: 60px;
+  height: 60px;
+  font-size: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+/* Footer */
+.bottom-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.9rem;
+  opacity: 0.8;
+}
+
+.footer-icons {
+  display: flex;
+  gap: 12px;
+}
+
+.footer-icons span {
+  cursor: pointer;
+}

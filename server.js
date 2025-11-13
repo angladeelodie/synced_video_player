@@ -45,6 +45,7 @@ function getMediaStructure() {
           audio: `${songPath}/audio.mp3`,
           vertical: `${songPath}/vertical.mp4`,
           square: `${songPath}/square.mp4`,
+          cover: `${songPath}/cover.jpg`
         };
       });
 
