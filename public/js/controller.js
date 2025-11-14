@@ -53,11 +53,13 @@ async function loadSongs() {
       `;
 
       row.onclick = () => {
-        ws.send(JSON.stringify({
-          type: "selectSlide",
-          student_id: student.student_id,
-          song_id: song.id
-        }));
+        ws.send(
+          JSON.stringify({
+            type: "selectSlide",
+            student_id: student.student_id,
+            song_id: song.id,
+          })
+        );
         highlightSelection(student.student_id, song.id);
       };
 
@@ -74,6 +76,22 @@ reloadBtn.onclick = () => {
   if (ws.readyState === WebSocket.OPEN) {
     ws.send(JSON.stringify({ type: "reloadAll" }));
     window.location.reload();
+  }
+};
+
+const autoplayBtn = document.getElementById("autoplay");
+let isAutoplay = true; // default
+
+autoplayBtn.onclick = () => {
+  console.log("Toggling autoplay from controller");
+  isAutoplay = !isAutoplay;
+
+  // Update button UI
+  autoplayBtn.classList.toggle("active", isAutoplay);
+
+  // Send toggle message to all devices
+  if (ws.readyState === WebSocket.OPEN) {
+    ws.send(JSON.stringify({ type: "toggleAutoplay", autoplay: isAutoplay }));
   }
 };
 

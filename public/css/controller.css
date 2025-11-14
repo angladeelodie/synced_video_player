@@ -1,6 +1,7 @@
 body {
-padding: 1rem;
-}.grid {
+  padding: 1rem;
+}
+.grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   gap: 15px;
@@ -19,41 +20,38 @@ padding: 1rem;
   height: 100%;
   display: flex;
   flex-direction: row;
-    flex-wrap: wrap;
+  flex-wrap: wrap;
   gap: 1rem;
-  
 }
 
 .controller-item {
-
-background-color: #222;
-border-radius: 12px;
-padding: 1rem;
+  background-color: #222;
+  border-radius: 12px;
+  padding: 1rem;
   max-width: 32%;
   height: auto;
   /* aspect-ratio: 4/5; */
 }
 
 .controller-item.selected {
-    border: 2px solid #4CAF50;
+  border: 2px solid #4caf50;
 }
 
 .controller-item .thumb-wrapper {
-    width: 100%;
-    height: auto;
-    aspect-ratio: 1/1;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1/1;
 }
 
-.thumb-wrapper video{
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
+.thumb-wrapper video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
-
 
 #controllerContainer {
   width: 100%;
-  height: 100vh;
+  height: 100%;
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -101,9 +99,9 @@ padding: 1rem;
   border-radius: 6px;
 }
 
-
 /* Controls */
 .player-controls {
+  height: 3vh;
   pointer-events: all;
   display: flex;
   justify-content: center;
@@ -113,10 +111,12 @@ padding: 1rem;
 }
 
 .control-btn {
-  background: none;
+  background: black;
   border: none;
+  border-radius: 12px;
+  padding: 0.5rem;
   color: white;
-  height: 70%;
+  height: 100%;
   cursor: pointer;
   position: relative;
 }
@@ -131,10 +131,15 @@ padding: 1rem;
   background: white;
   color: black;
   border-radius: 50%;
-  width: 15vw;
-  height: 15vw;
+  height: 100%;
+  width: auto;
+  aspect-ratio: 1/1;
   font-size: 2rem;
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+#autoplay.active {
+  filter: invert(1);
 }

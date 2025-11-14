@@ -7,13 +7,18 @@ let swiper = null;
 const playPauseBtn = document.getElementById("playPause");
 
 // Setup WebSocket with shared controller logic
-setupWsController(ws, playPauseBtn, () => {
-  return swiper?.slides[swiper.activeIndex]?.querySelector("video");
-});
+setupWsController(
+  ws,
+  playPauseBtn,
+  () => swiper?.slides[swiper.activeIndex]?.querySelector("video"),
+  () => swiper // pass Swiper instance
+);
 
 // Update UI elements when a slide is active
 function changeUiElements(studentId, songId, songTitle, songArtist, songAlbum) {
-  document.getElementById("coverImage").src = `videos/${studentId}/${songId}/cover.jpg`;
+  document.getElementById(
+    "coverImage"
+  ).src = `videos/${studentId}/${songId}/cover.jpg`;
   document.getElementById("song-title").innerText = songTitle;
   document.getElementById("song-artist").innerText = songArtist;
   document.getElementById("student-name").innerText = studentId;
@@ -63,6 +68,10 @@ async function loadSongs() {
   swiper = new Swiper("#songSwiper", {
     slidesPerView: 1,
     spaceBetween: 0,
+    autoplay: {
+      delay: 3000,
+      disableOnInteraction: false,
+    },
     loop: true,
     navigation: {
       nextEl: ".button-next",
@@ -83,11 +92,13 @@ async function loadSongs() {
 
     // Broadcast slide change to all devices
     if (ws.readyState === WebSocket.OPEN) {
-      ws.send(JSON.stringify({
-        type: "selectSlide",
-        student_id: studentId,
-        song_id: songId
-      }));
+      ws.send(
+        JSON.stringify({
+          type: "selectSlide",
+          student_id: studentId,
+          song_id: songId,
+        })
+      );
     }
   });
 
