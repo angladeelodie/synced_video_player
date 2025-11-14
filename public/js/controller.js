@@ -1,26 +1,21 @@
 // controller.js
 import { WS_URL } from "./config.js";
+import { setupWsController } from "./sharedWsController.js";
 
 const ws = new WebSocket(WS_URL);
+let swiper = null; // optional if you want swiper preview
+const playPauseBtn = document.getElementById("playPause");
 
-ws.onopen = () => {
-  console.log("📡 controller.html connected to server");
-};
+// Setup WebSocket shared controller
+setupWsController(ws, playPauseBtn, () => {
+  if (!swiper) return null;
+  return swiper.slides[swiper.activeIndex]?.querySelector("video");
+});
 
-ws.onmessage = (msg) => {
-  const data = JSON.parse(msg.data);
-  if (data.type === "selectSlide") {
-    highlightSelection(data.student_id, data.song_id);
-  }
-};
-
-// ---------- highlight selection ----------
+// Highlight the selected row
 function highlightSelection(studentId, songId) {
   document.querySelectorAll(".table-row").forEach((row) => {
-    if (
-      row.dataset.student === studentId &&
-      row.dataset.songId === songId
-    ) {
+    if (row.dataset.student === studentId && row.dataset.songId === songId) {
       row.classList.add("selected");
     } else {
       row.classList.remove("selected");
@@ -28,7 +23,7 @@ function highlightSelection(studentId, songId) {
   });
 }
 
-// ---------- Load table rows ----------
+// Load all songs in a scrollable table/grid
 async function loadSongs() {
   const res = await fetch("/api/media");
   const data = await res.json();
@@ -51,22 +46,18 @@ async function loadSongs() {
         </div>
         <div>${student.student_id}</div>
         <div>${song.id}</div>
-
         <div class="song-info">
           <strong>${song.title}</strong><br>
           <small>${song.artist}</small>
         </div>
-
       `;
 
       row.onclick = () => {
-        ws.send(
-          JSON.stringify({
-            type: "selectSlide",
-            student_id: student.student_id,
-            song_id: song.id,
-          })
-        );
+        ws.send(JSON.stringify({
+          type: "selectSlide",
+          student_id: student.student_id,
+          song_id: song.id
+        }));
         highlightSelection(student.student_id, song.id);
       };
 
@@ -76,3 +67,15 @@ async function loadSongs() {
 }
 
 window.onload = loadSongs;
+
+// Reload all pages button
+const reloadBtn = document.getElementById("reloadAllBtn");
+reloadBtn.onclick = () => {
+  if (ws.readyState === WebSocket.OPEN) {
+    ws.send(JSON.stringify({ type: "reloadAll" }));
+    window.location.reload();
+  }
+};
+
+// Expose highlightSelection globally if needed for sharedWsController
+window.highlightSelection = highlightSelection;

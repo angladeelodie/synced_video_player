@@ -1,31 +1,41 @@
 // phone.js
 import { WS_URL } from "./config.js";
+import { setupWsController } from "./sharedWsController.js";
+
 const ws = new WebSocket(WS_URL);
 let swiper = null;
-ws.onopen = () => {
-  console.log("📡 Phone connected to server");
-};
-ws.onmessage = (msg) => {
-  const data = JSON.parse(msg.data);
+const playPauseBtn = document.getElementById("playPause");
 
-  if (data.type === "selectSlide") {
-    jumpToSlide(data.student_id, data.song_id);
-  }
-};
+// Setup WebSocket with shared controller logic
+setupWsController(ws, playPauseBtn, () => {
+  return swiper?.slides[swiper.activeIndex]?.querySelector("video");
+});
+
+// Update UI elements when a slide is active
 function changeUiElements(studentId, songId, songTitle, songArtist, songAlbum) {
-  document.getElementById(
-    "coverImage"
-  ).src = `videos/${studentId}/${songId}/cover.jpg`;
-  document.getElementById("song-title").innerText = `${songTitle}`;
-  document.getElementById("song-artist").innerText = `${songArtist}`;
-  document.getElementById("student-name").innerText = `${studentId}`;
+  document.getElementById("coverImage").src = `videos/${studentId}/${songId}/cover.jpg`;
+  document.getElementById("song-title").innerText = songTitle;
+  document.getElementById("song-artist").innerText = songArtist;
+  document.getElementById("student-name").innerText = studentId;
 }
 
-// Fetch media from server
+// Jump to a specific slide
+function jumpToSlide(studentId, songId) {
+  const slides = swiper.slides;
+  for (let i = 0; i < slides.length; i++) {
+    const s = slides[i];
+    if (s.dataset.student === studentId && s.dataset.songId === songId) {
+      swiper.slideToLoop(i, 400); // smooth transition
+      return;
+    }
+  }
+  console.warn("❗ Slide not found:", studentId, songId);
+}
+
+// Load songs and initialize swiper
 async function loadSongs() {
   const res = await fetch("/api/media");
   const data = await res.json();
-  console.log("📥 Media data:", data);
 
   const swiperWrapper = document.querySelector(".swiper-wrapper");
   swiperWrapper.innerHTML = "";
@@ -41,10 +51,10 @@ async function loadSongs() {
       slide.dataset.artist = song.artist;
 
       slide.innerHTML = `
-          <video muted loop autoplay playsinline>
-            <source src="${song.vertical}" type="video/mp4">
-          </video>
-        `;
+        <video muted loop autoplay playsinline>
+          <source src="${song.vertical}" type="video/mp4">
+        </video>
+      `;
       swiperWrapper.appendChild(slide);
     });
   });
@@ -60,9 +70,8 @@ async function loadSongs() {
     },
   });
 
-  // send selected slide info when Swiper changes
+  // Slide change: broadcast to WS
   swiper.on("slideChange", () => {
-    console.log("Slide changed to index:", swiper.activeIndex);
     const slide = swiper.slides[swiper.activeIndex];
     const studentId = slide.dataset.student;
     const songId = slide.dataset.songId;
@@ -71,15 +80,18 @@ async function loadSongs() {
     const songAlbum = slide.dataset.album;
 
     changeUiElements(studentId, songId, songTitle, songArtist, songAlbum);
-    ws.send(
-      JSON.stringify({
+
+    // Broadcast slide change to all devices
+    if (ws.readyState === WebSocket.OPEN) {
+      ws.send(JSON.stringify({
         type: "selectSlide",
         student_id: studentId,
-        song_id: songId,
-      })
-    );
+        song_id: songId
+      }));
+    }
   });
 
+  // Set initial UI
   changeUiElements(
     data[0].student_id,
     data[0].songs[0].id,
@@ -87,40 +99,9 @@ async function loadSongs() {
     data[0].songs[0].artist,
     data[0].songs[0].album
   );
+
+  // Expose jumpToSlide globally for sharedWsController
+  window.jumpToSlide = jumpToSlide;
 }
-
-function jumpToSlide(studentId, songId) {
-  const slides = swiper.slides;
-
-  for (let i = 0; i < slides.length; i++) {
-    const s = slides[i];
-    if (s.dataset.student === studentId && s.dataset.songId === songId) {
-      swiper.slideToLoop(i, 400); // smooth transition
-      return;
-    }
-  }
-
-  console.warn("❗ Slide not found:", studentId, songId);
-}
-
-// Play / Pause buttons
-const playPauseBtn = document.getElementById("playPause");
-let isPlaying = false; // track state manually
-
-playPauseBtn.onclick = () => {
-  if (ws.readyState !== WebSocket.OPEN) return;
-
-  if (isPlaying) {
-    // Send pause
-    // ws.send(JSON.stringify({ type: "pause", ...currentSelection }));
-    playPauseBtn.innerHTML = '<img src="./assets/icons/Play.svg" alt="">'; // show play icon
-  } else {
-    // Send play
-    // ws.send(JSON.stringify({ type: "play", ...currentSelection }));
-    playPauseBtn.innerHTML = '<img src="./assets/icons/Pause.svg" alt="">'; // show pause icon
-  }
-
-  isPlaying = !isPlaying;
-};
 
 window.onload = loadSongs;

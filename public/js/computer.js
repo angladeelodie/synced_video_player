@@ -26,6 +26,26 @@ ws.onmessage = (event) => {
       console.warn("⚠️ Slide not found in albumData");
     }
   }
+
+  if (msg.type === "play") {
+    const activeVideo =
+      swiper?.slides[swiper.activeIndex]?.querySelector("video");
+    if (activeVideo) {
+      activeVideo.play().catch((err) => console.warn(err));
+    }
+  }
+
+  if (msg.type === "pause") {
+    const activeVideo =
+      swiper?.slides[swiper.activeIndex]?.querySelector("video");
+    if (activeVideo) {
+      activeVideo.pause();
+    }
+  }
+
+  if (msg.type === "reloadAll") {
+    window.location.reload(); // reload this page
+  }
 };
 
 const swiperWrapper = document.querySelector(".swiper-wrapper");
