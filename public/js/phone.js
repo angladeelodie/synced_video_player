@@ -1,22 +1,17 @@
 // phone.js
 import { WS_URL } from "./config.js";
 const ws = new WebSocket(WS_URL);
-
+let swiper = null;
 ws.onopen = () => {
   console.log("📡 Phone connected to server");
 };
+ws.onmessage = (msg) => {
+  const data = JSON.parse(msg.data);
 
-// Initialize Swiper
-const swiper = new Swiper("#songSwiper", {
-  slidesPerView: 1,
-  spaceBetween: 0,
-  loop: true,
-  navigation: {
-    nextEl: ".button-next",
-    prevEl: ".button-prev",
-  },
-});
-
+  if (data.type === "selectSlide") {
+    jumpToSlide(data.student_id, data.song_id);
+  }
+};
 function changeUiElements(studentId, songId, songTitle, songArtist, songAlbum) {
   document.getElementById(
     "coverImage"
@@ -26,41 +21,19 @@ function changeUiElements(studentId, songId, songTitle, songArtist, songAlbum) {
   document.getElementById("student-name").innerText = `${studentId}`;
 }
 
-// send selected slide info when Swiper changes
-swiper.on("slideChange", () => {
-  console.log("Slide changed to index:", swiper.activeIndex);
-  const slide = swiper.slides[swiper.activeIndex];
-  const studentId = slide.dataset.student;
-  const songId = slide.dataset.songId;
-  const songTitle = slide.dataset.song;
-  const songArtist = slide.dataset.artist;
-  const songAlbum = slide.dataset.album;
-  
-  
-  changeUiElements(studentId, songId, songTitle, songArtist, songAlbum);
-  ws.send(
-    JSON.stringify({
-      type: "selectSlide",
-      student_id: studentId,
-      song_id: songId,
-      
-    })
-  );
-});
-
 // Fetch media from server
 async function loadSongs() {
   const res = await fetch("/api/media");
   const data = await res.json();
   console.log("📥 Media data:", data);
 
-  const songsGrid = document.getElementById("songsGrid");
-  songsGrid.innerHTML = "";
+  const swiperWrapper = document.querySelector(".swiper-wrapper");
+  swiperWrapper.innerHTML = "";
 
   data.forEach((student) => {
     student.songs.forEach((song) => {
       const slide = document.createElement("div");
-      slide.className = "swiper-slide";
+      slide.classList.add("swiper-slide");
       slide.dataset.student = student.student_id;
       slide.dataset.songId = song.id;
       slide.dataset.song = song.title;
@@ -72,11 +45,41 @@ async function loadSongs() {
             <source src="${song.vertical}" type="video/mp4">
           </video>
         `;
-      //   slide.onclick = () => selectSong(student.student_id, song.id);
-      songsGrid.appendChild(slide);
+      swiperWrapper.appendChild(slide);
     });
   });
-  swiper.update();
+
+  // Initialize Swiper
+  swiper = new Swiper("#songSwiper", {
+    slidesPerView: 1,
+    spaceBetween: 0,
+    loop: true,
+    navigation: {
+      nextEl: ".button-next",
+      prevEl: ".button-prev",
+    },
+  });
+
+  // send selected slide info when Swiper changes
+  swiper.on("slideChange", () => {
+    console.log("Slide changed to index:", swiper.activeIndex);
+    const slide = swiper.slides[swiper.activeIndex];
+    const studentId = slide.dataset.student;
+    const songId = slide.dataset.songId;
+    const songTitle = slide.dataset.song;
+    const songArtist = slide.dataset.artist;
+    const songAlbum = slide.dataset.album;
+
+    changeUiElements(studentId, songId, songTitle, songArtist, songAlbum);
+    ws.send(
+      JSON.stringify({
+        type: "selectSlide",
+        student_id: studentId,
+        song_id: songId,
+      })
+    );
+  });
+
   changeUiElements(
     data[0].student_id,
     data[0].songs[0].id,
@@ -84,6 +87,20 @@ async function loadSongs() {
     data[0].songs[0].artist,
     data[0].songs[0].album
   );
+}
+
+function jumpToSlide(studentId, songId) {
+  const slides = swiper.slides;
+
+  for (let i = 0; i < slides.length; i++) {
+    const s = slides[i];
+    if (s.dataset.student === studentId && s.dataset.songId === songId) {
+      swiper.slideToLoop(i, 400); // smooth transition
+      return;
+    }
+  }
+
+  console.warn("❗ Slide not found:", studentId, songId);
 }
 
 // Play / Pause buttons
