@@ -156,33 +156,25 @@ async function loadAlbums() {
 }
 
 function playActiveSlideVideo(swiper) {
-  const slidesToKeep = [
-    swiper.slides[swiper.activeIndex],
-    swiper.slides[swiper.activeIndex - 1],
-    swiper.slides[swiper.activeIndex + 1],
-    swiper.slides[swiper.activeIndex - 2],
-    swiper.slides[swiper.activeIndex + 2]
-  ];
+  swiper.slides.forEach((slide, i) => {
+    const video = slide.querySelector("video");
+    if (!video) return;
 
-  // Unload all other slides
-  swiper.slides.forEach((slide) => {
-    if (!slidesToKeep.includes(slide)) {
-      unloadVideo(slide.querySelector("video"));
+    if (i === swiper.activeIndex) {
+      // Load and play active video
+      if (!video.src && video.dataset.src) {
+        video.src = video.dataset.src;
+        video.load();
+      }
+      video.muted = false;
+      video.play().catch(() => {});
+    } else {
+      // Pause and unload all other videos
+      video.pause();
+      video.removeAttribute("src");
+      video.load();
     }
   });
-
-  // Load the 5 visible slides (active + its side slides)
-  slidesToKeep.forEach((slide) => {
-    const vid = slide?.querySelector("video");
-    loadVideo(vid);
-  });
-
-  // Play only active one
-  const activeVideo = swiper.slides[swiper.activeIndex].querySelector("video");
-  if (activeVideo) {
-    activeVideo.muted = false;
-    activeVideo.play().catch(() => {});
-  }
 }
 
 document.body.addEventListener(
