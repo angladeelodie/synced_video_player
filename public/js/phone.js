@@ -47,6 +47,7 @@ async function loadSongs() {
 
   data.forEach((student) => {
     student.songs.forEach((song) => {
+
       const slide = document.createElement("div");
       slide.classList.add("swiper-slide");
       slide.dataset.student = student.student_id;
@@ -56,10 +57,16 @@ async function loadSongs() {
       slide.dataset.artist = song.artist;
 
       slide.innerHTML = `
-        <video muted loop autoplay playsinline>
-          <source src="${song.vertical}" type="video/mp4">
-        </video>
+        <video
+          class="phone-video"
+          muted
+          loop
+          playsinline
+          preload="none"
+          data-src="${song.vertical}"
+        ></video>
       `;
+
       swiperWrapper.appendChild(slide);
     });
   });
@@ -79,8 +86,12 @@ async function loadSongs() {
     },
   });
 
-  // Slide change: broadcast to WS
-  swiper.on("slideChange", () => {
+  // Initial load
+  handleSlideVideos(swiper);
+
+  swiper.on("slideChangeTransitionEnd", () => {
+    handleSlideVideos(swiper);
+
     const slide = swiper.slides[swiper.activeIndex];
     const studentId = slide.dataset.student;
     const songId = slide.dataset.songId;
@@ -90,19 +101,17 @@ async function loadSongs() {
 
     changeUiElements(studentId, songId, songTitle, songArtist, songAlbum);
 
-    // Broadcast slide change to all devices
+    // Broadcast slide change
     if (ws.readyState === WebSocket.OPEN) {
-      ws.send(
-        JSON.stringify({
-          type: "selectSlide",
-          student_id: studentId,
-          song_id: songId,
-        })
-      );
+      ws.send(JSON.stringify({
+        type: "selectSlide",
+        student_id: studentId,
+        song_id: songId
+      }));
     }
   });
 
-  // Set initial UI
+  // Initial UI
   changeUiElements(
     data[0].student_id,
     data[0].songs[0].id,
@@ -111,8 +120,50 @@ async function loadSongs() {
     data[0].songs[0].album
   );
 
-  // Expose jumpToSlide globally for sharedWsController
   window.jumpToSlide = jumpToSlide;
 }
+
+
+function loadVideo(videoEl) {
+  if (!videoEl || videoEl.src) return;
+
+  if (videoEl.dataset.src) {
+    videoEl.src = videoEl.dataset.src;
+    videoEl.load();
+  }
+}
+
+function unloadVideo(videoEl) {
+  if (!videoEl) return;
+  videoEl.pause();
+  videoEl.removeAttribute("src");
+  videoEl.load(); // clears buffer
+}
+
+function handleSlideVideos(swiper) {
+  const active = swiper.slides[swiper.activeIndex];
+  const prev = swiper.slides[swiper.activeIndex - 1];
+  const next = swiper.slides[swiper.activeIndex + 1];
+
+  // Unload all distant slides
+  swiper.slides.forEach((slide) => {
+    if (slide !== active && slide !== prev && slide !== next) {
+      unloadVideo(slide.querySelector("video"));
+    }
+  });
+
+  // Load neighbor preview videos
+  [prev, next].forEach((slide) => {
+    if (slide) loadVideo(slide.querySelector("video"));
+  });
+
+  // Load + play active slide
+  const activeVideo = active.querySelector("video");
+  loadVideo(activeVideo);
+  activeVideo.muted = false;
+  activeVideo.play().catch(() => {});
+}
+
+
 
 window.onload = loadSongs;

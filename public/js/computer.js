@@ -70,19 +70,32 @@ async function loadAlbums() {
         const slide = document.createElement("div");
         slide.classList.add("swiper-slide");
         slide.innerHTML = `
-          <div class="slide-content">
-            <video loop playsinline preload="auto">
-              <source src="${song.square}" type="video/mp4" />
-            </video>
-            <div class="project-info">
-              <div class="song-title-container">
-                <div class="song-title">${song.title}</div>
-              </div>
-              <div class="song-artist">${song.artist}</div>
-            </div>
-            
-          </div>
-        `;
+  <div class="slide-content">
+    <div class="media-wrapper">
+      <img 
+        class="thumb" 
+        src="${song.cover}" 
+        alt="${song.title}" 
+        loading="lazy"
+      >
+      <video 
+        loop 
+        playsinline 
+        preload="none" 
+        class="video fade-video"
+        data-src="${song.square}"
+      ></video>
+    </div>
+
+    <div class="project-info">
+      <div class="song-title-container">
+        <div class="song-title">${song.title}</div>
+      </div>
+      <div class="song-artist">${song.artist}</div>
+    </div>
+  </div>
+`;
+
         swiperWrapper.appendChild(slide);
       });
     });
@@ -143,18 +156,32 @@ async function loadAlbums() {
 }
 
 function playActiveSlideVideo(swiper) {
+  const slidesToKeep = [
+    swiper.slides[swiper.activeIndex],
+    swiper.slides[swiper.activeIndex - 1],
+    swiper.slides[swiper.activeIndex + 1],
+    swiper.slides[swiper.activeIndex - 2],
+    swiper.slides[swiper.activeIndex + 2]
+  ];
+
+  // Unload all other slides
   swiper.slides.forEach((slide) => {
-    const video = slide.querySelector("video");
-    if (video) {
-      video.pause();
-      video.currentTime = 0;
+    if (!slidesToKeep.includes(slide)) {
+      unloadVideo(slide.querySelector("video"));
     }
   });
 
+  // Load the 5 visible slides (active + its side slides)
+  slidesToKeep.forEach((slide) => {
+    const vid = slide?.querySelector("video");
+    loadVideo(vid);
+  });
+
+  // Play only active one
   const activeVideo = swiper.slides[swiper.activeIndex].querySelector("video");
   if (activeVideo) {
-    activeVideo.muted = false; // ✅ unmute so we hear the embedded audio
-    activeVideo.play().catch((err) => console.warn(err));
+    activeVideo.muted = false;
+    activeVideo.play().catch(() => {});
   }
 }
 
@@ -167,5 +194,27 @@ document.body.addEventListener(
   },
   { once: true }
 );
+
+function loadVideo(videoEl) {
+  if (!videoEl || videoEl.src) return;
+
+  if (videoEl.dataset.src) {
+    videoEl.src = videoEl.dataset.src;
+    videoEl.load();
+
+    videoEl.oncanplay = () => {
+      videoEl.classList.add("loaded");
+    };
+  }
+}
+
+function unloadVideo(videoEl) {
+  if (!videoEl) return;
+  videoEl.pause();
+  videoEl.classList.remove("loaded");
+  videoEl.removeAttribute("src");
+  videoEl.load();
+}
+
 
 window.addEventListener("DOMContentLoaded", loadAlbums);

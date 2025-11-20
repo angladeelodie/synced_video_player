@@ -1,6 +1,6 @@
 export function setupWsController(ws, playPauseBtn, getActiveVideo, getSwiper) {
   let isPlaying = true;      // playback state
-  let isAutoplay = true;     // autoplay state
+  let isAutoplay = false;     // autoplay state
 
   function updateVideoAndButton() {
     const video = getActiveVideo();

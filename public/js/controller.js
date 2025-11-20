@@ -40,9 +40,7 @@ async function loadSongs() {
 
       row.innerHTML = `
         <div class="thumbnail">
-          <video muted loop autoplay playsinline>
-            <source src="${song.vertical}" type="video/mp4">
-          </video>
+        <img src="videos/${student.student_id}/${song.id}/cover.png" alt="Cover" />
         </div>
         <div>${student.student_id}</div>
         <div>${song.id}</div>
