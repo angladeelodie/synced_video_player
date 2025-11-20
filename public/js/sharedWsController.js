@@ -1,6 +1,6 @@
 export function setupWsController(ws, playPauseBtn, getActiveVideo, getSwiper) {
-  let isPlaying = true;      // playback state
-  let isAutoplay = false;     // autoplay state
+  let isPlaying = true; // playback state
+  let isAutoplay = false; // autoplay state
 
   function updateVideoAndButton() {
     const video = getActiveVideo();
@@ -44,8 +44,12 @@ export function setupWsController(ws, playPauseBtn, getActiveVideo, getSwiper) {
         isAutoplay = !!data.autoplay;
         const swiper = getSwiper?.();
         if (swiper && swiper.autoplay) {
-          if (isAutoplay) swiper.autoplay.start();
-          else swiper.autoplay.stop();
+          if (isAutoplay) {
+          console.log("Autoplay started");
+            swiper.autoplay.start();
+          } else {
+            swiper.autoplay.stop();
+          }
         }
         break;
     }

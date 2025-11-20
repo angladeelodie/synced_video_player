@@ -86,6 +86,7 @@ async function loadSongs() {
     },
   });
 
+  swiper.autoplay.stop(); // start paused
   // Initial load
   handleSlideVideos(swiper);
 
@@ -160,7 +161,7 @@ function handleSlideVideos(swiper) {
   // Load + play active slide
   const activeVideo = active.querySelector("video");
   loadVideo(activeVideo);
-  activeVideo.muted = false;
+  // activeVideo.muted = false;
   activeVideo.play().catch(() => {});
 }
 

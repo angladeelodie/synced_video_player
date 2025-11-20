@@ -50,15 +50,15 @@ body {
 }
 
 .thumbnail {
-  width: 10vh;
-  height: auto;
+  width: 5vh;
+  height: 5vh;
   aspect-ratio: 1/1;
 }
 
 .thumbnail img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
 }
 
 #controllerContainer {
@@ -85,10 +85,8 @@ body {
 
 .table-row {
   text-transform: capitalize;
-
   display: grid;
   grid-template-columns: 150px 150px 150px 1fr;
-  padding: 8px 12px;
   align-items: center;
   /* border-bottom: 1px solid #eee; */
   /* cursor: pointer; */
@@ -105,15 +103,16 @@ body {
 }
 
 .thumbnail video {
-  width: 70px;
-  height: 70px;
+  width: auto;
+  height: 100%;
+  aspect-ratio: 1/1;
   object-fit: cover;
   border-radius: 6px;
 }
 
 /* Controls */
 .player-controls {
-  height: 3vh;
+  height: 5vh;
   pointer-events: all;
   display: flex;
   justify-content: center;
@@ -155,3 +154,20 @@ body {
 #autoplay.active {
   filter: invert(1);
 }
+
+ @media screen and (max-width: 600px) { 
+  
+.song-info {
+  display: none;
+}
+
+.table-row div:nth-child(4) {
+  display: none;
+}
+
+#controllerHeader, #controllerGrid .table-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+     }
+
+ }
