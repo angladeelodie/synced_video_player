@@ -18,7 +18,7 @@ setupWsController(
 function changeUiElements(studentId, songId, songTitle, songArtist, songAlbum) {
   document.getElementById(
     "coverImage"
-  ).src = `videos/${studentId}/${songId}/cover.jpg`;
+  ).src = `videos/${studentId}/${songId}/cover.png`;
   document.getElementById("song-title").innerText = songTitle;
   document.getElementById("song-artist").innerText = songArtist;
   document.getElementById("student-name").innerText = studentId;
@@ -69,8 +69,8 @@ async function loadSongs() {
     slidesPerView: 1,
     spaceBetween: 0,
     autoplay: {
-      delay: 3000,
-      disableOnInteraction: false,
+      delay: 10000,
+      disableOnInteraction: true,
     },
     loop: true,
     navigation: {

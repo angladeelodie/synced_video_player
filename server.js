@@ -50,7 +50,7 @@ function getMediaStructure() {
           audio: `${songPath}/audio.mp3`,
           vertical: `${songPath}/vertical.mp4`,
           square: `${songPath}/square.mp4`,
-          cover: `${songPath}/cover.jpg`,
+          cover: `${songPath}/cover.png`,
           title: metadata[songFolder]?.title || songFolder,
           album: metadata[songFolder]?.album || "Unknown Album",
           artist: metadata[songFolder]?.artist || "Unknown Artist",

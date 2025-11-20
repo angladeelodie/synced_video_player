@@ -80,7 +80,7 @@ reloadBtn.onclick = () => {
 };
 
 const autoplayBtn = document.getElementById("autoplay");
-let isAutoplay = true; // default
+let isAutoplay = false; // default
 
 autoplayBtn.onclick = () => {
   console.log("Toggling autoplay from controller");

@@ -2,4 +2,4 @@
 export const WS_URL =
   location.hostname === "localhost"
     ? "ws://localhost:3000"
-    : "ws://192.168.0.20:3000";
+    : "ws://192.168.0.85:3000";
