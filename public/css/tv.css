@@ -14,6 +14,7 @@ body {
 
 .swiper {
   aspect-ratio: 4 / 3;
+  margin-left: 0;
   height: 100%; /* or max-height: 100% */
   width: auto;
   max-width: 100%;
